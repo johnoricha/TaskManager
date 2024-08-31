@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:task_manager/data/remote/models/task_dto.dart';
 
@@ -10,4 +11,13 @@ abstract class RestClient {
 
   @GET('/tasks')
   Future<HttpResponse<List<TaskDto>>> getTasks();
+
+  @POST('/tasks')
+  Future<HttpResponse> createTask(@Body() TaskDto task);
+
+  @PUT('/tasks/{id}')
+  Future<HttpResponse> updateTask(@Body() TaskDto task, @Path() int id);
+
+  @DELETE('/tasks/{id}')
+  Future<HttpResponse> deleteTask(@Path() int id);
 }

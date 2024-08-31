@@ -11,6 +11,9 @@ TaskDto _$TaskDtoFromJson(Map<String, dynamic> json) => TaskDto(
       title: json['title'] as String,
       userId: (json['userId'] as num).toInt(),
       completed: json['completed'] as bool,
+      syncStatus:
+          $enumDecodeNullable(_$SyncStatusEnumMap, json['syncStatus']) ??
+              SyncStatus.notSynced,
     );
 
 Map<String, dynamic> _$TaskDtoToJson(TaskDto instance) => <String, dynamic>{
@@ -18,4 +21,13 @@ Map<String, dynamic> _$TaskDtoToJson(TaskDto instance) => <String, dynamic>{
       'title': instance.title,
       'userId': instance.userId,
       'completed': instance.completed,
+      'syncStatus': _$SyncStatusEnumMap[instance.syncStatus]!,
     };
+
+const _$SyncStatusEnumMap = {
+  SyncStatus.synced: 'synced',
+  SyncStatus.pendingCreate: 'pendingCreate',
+  SyncStatus.pendingUpdate: 'pendingUpdate',
+  SyncStatus.pendingDelete: 'pendingDelete',
+  SyncStatus.notSynced: 'notSynced',
+};
