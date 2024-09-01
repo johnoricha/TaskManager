@@ -9,8 +9,7 @@ part 'task_entity.g.dart';
 @JsonSerializable()
 class TaskEntity extends Equatable {
   final int id;
-  final String title;
-  final int userId;
+  final String name;
   final SyncStatus syncStatus;
 
   @JsonKey(fromJson: _boolFromInt, toJson: _boolToInt)
@@ -18,8 +17,7 @@ class TaskEntity extends Equatable {
 
   const TaskEntity({
     required this.id,
-    required this.title,
-    required this.userId,
+    required this.name,
     required this.completed,
     this.syncStatus = SyncStatus.notSynced,
   });
@@ -31,16 +29,14 @@ class TaskEntity extends Equatable {
 
   Task toTask() => Task(
         id: id,
-        userId: userId,
-        title: title,
+        name: name,
         completed: completed,
         syncStatus: syncStatus,
       );
 
   TaskDto toTaskDto() => TaskDto(
         id: id,
-        userId: userId,
-        title: title,
+        name: name,
         completed: completed,
         syncStatus: syncStatus,
       );
@@ -54,13 +50,12 @@ class TaskEntity extends Equatable {
   }) =>
       TaskEntity(
           id: id ?? this.id,
-          title: title ?? this.title,
-          userId: userId ?? this.userId,
+          name: title ?? this.name,
           completed: completed ?? this.completed,
           syncStatus: syncStatus ?? this.syncStatus);
 
   @override
-  List<Object?> get props => [id, title, userId, completed, syncStatus];
+  List<Object?> get props => [id, name, completed, syncStatus];
 
   static bool _boolFromInt(int value) => value == 1;
 

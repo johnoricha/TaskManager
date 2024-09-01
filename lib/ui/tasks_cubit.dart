@@ -41,7 +41,7 @@ class TasksCubit extends Cubit<TasksState> {
 
   Future<void> createTask(Task task) async {
     await appRepository.createTask(
-        const Task(id: 3, title: 'Title 3', completed: false, userId: 3));
+        const Task(id: 3, name: 'Title 3', completed: false,));
   }
 
   Future<void> syncTasks() async {

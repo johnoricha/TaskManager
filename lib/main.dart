@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/core/initializer.dart';
-import 'package:task_manager/data/app_repository.dart';
-import 'package:task_manager/data/local/models/task_provider.dart';
-import 'package:task_manager/data/local/task_manager_database.dart';
-import 'package:task_manager/data/local/task_provider.dart';
-import 'package:task_manager/data/app_repository_impl.dart';
-import 'package:task_manager/data/repository/tasks_repository.dart';
 import 'package:task_manager/ui/tasks_cubit.dart';
 import 'package:task_manager/ui/tasks_state.dart';
 
@@ -46,12 +40,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void initData() async {
     await _cubit.getTasks();
-    await _cubit.createTask(
-        const Task(id: 3, title: 'title 3', completed: false, userId: 3));
-    await _cubit.updateTask(
-        const Task(id: 3, title: 'title 3', completed: false, userId: 3));
-    await _cubit.deleteTask(
-        const Task(id: 3, title: 'title 3', completed: true, userId: 3));
+    await _cubit.createTask(const Task(
+      id: 3,
+      name: 'title 3',
+      completed: false,
+    ));
+    await _cubit.updateTask(const Task(
+      id: 3,
+      name: 'title 3',
+      completed: false,
+    ));
+    await _cubit.deleteTask(const Task(
+      id: 3,
+      name: 'title 3',
+      completed: true,
+    ));
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:task_manager/data/local/task_manager_database.dart';
 import 'package:task_manager/data/local/task_provider.dart';
 
 class TaskProviderImpl extends TaskProvider {
-  TaskMangerDatabase db;
+  TaskManagerDatabase db;
 
   TaskProviderImpl(this.db);
 

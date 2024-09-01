@@ -9,15 +9,13 @@ part 'task_dto.g.dart';
 @JsonSerializable()
 class TaskDto extends Equatable {
   final int id;
-  final String title;
-  final int userId;
+  final String name;
   final bool completed;
   final SyncStatus syncStatus;
 
   const TaskDto({
     required this.id,
-    required this.title,
-    required this.userId,
+    required this.name,
     required this.completed,
     this.syncStatus = SyncStatus.notSynced,
   });
@@ -29,18 +27,14 @@ class TaskDto extends Equatable {
 
   Task toTask() => Task(
         id: id,
-        userId: userId,
-        title: title,
+        name: name,
         completed: completed,
+        syncStatus: syncStatus,
       );
 
   TaskEntity toTaskEntity() => TaskEntity(
-      id: id,
-      userId: userId,
-      title: title,
-      completed: completed,
-      syncStatus: syncStatus);
+      id: id, name: name, completed: completed, syncStatus: syncStatus);
 
   @override
-  List<Object?> get props => [id, title, userId, completed, syncStatus];
+  List<Object?> get props => [id, name, completed, syncStatus];
 }

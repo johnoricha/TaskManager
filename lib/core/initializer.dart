@@ -12,7 +12,7 @@ final getIt = GetIt.instance;
 void initialize() {
 
   //local db
-  getIt.registerSingleton<TaskMangerDatabase>(TaskMangerDatabase());
+  getIt.registerSingleton<TaskManagerDatabase>(TaskManagerDatabase());
 
 
   //repos
