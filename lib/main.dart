@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/core/initializer.dart';
 import 'package:task_manager/data/app_repository.dart';
 import 'package:task_manager/data/local/models/task_provider.dart';
 import 'package:task_manager/data/local/task_manager_database.dart';
@@ -9,6 +10,7 @@ import 'package:task_manager/ui/tasks_cubit.dart';
 import 'package:task_manager/ui/tasks_state.dart';
 
 void main() {
+  initialize();
   runApp(const MyApp());
 }
 
@@ -40,15 +42,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedAmountIndex = 0;
-  final _cubit = TasksCubit(AppRepositoryImpl(
-      TaskProviderImpl(TaskMangerDatabase()), TasksRepositoryImpl()));
+  final _cubit = getIt.get<TasksCubit>();
 
   void initData() async {
     await _cubit.getTasks();
-    await _cubit.createTask(const Task(id: 3, title: 'title 3', completed: false, userId: 3 ));
-    await _cubit.updateTask(const Task(id: 3, title: 'title 3', completed: true, userId: 3 ));
-    await _cubit.deleteTask(const Task(id: 3, title: 'title 3', completed: true, userId: 3 ));
-
+    await _cubit.createTask(
+        const Task(id: 3, title: 'title 3', completed: false, userId: 3));
+    await _cubit.updateTask(
+        const Task(id: 3, title: 'title 3', completed: false, userId: 3));
+    await _cubit.deleteTask(
+        const Task(id: 3, title: 'title 3', completed: true, userId: 3));
   }
 
   @override
@@ -65,7 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.sync))
+          IconButton(
+              onPressed: () async {
+                await _cubit.syncTasks();
+              },
+              icon: const Icon(Icons.sync))
         ],
       ),
       body: Center(
@@ -97,7 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.w400,
                           color: _selectedAmountIndex == 0
                               ? Colors.white
-                              : Theme.of(context).colorScheme.onPrimaryContainer,
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
                         ),
                         // ),
                       ),
@@ -126,7 +135,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.w400,
                           color: _selectedAmountIndex == 1
                               ? Colors.white
-                              : Theme.of(context).colorScheme.onPrimaryContainer,
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
                         ),
                         // ),
                       ),
@@ -155,7 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontWeight: FontWeight.w400,
                           color: _selectedAmountIndex == 2
                               ? Colors.white
-                              : Theme.of(context).colorScheme.onPrimaryContainer,
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
                         ),
                         // ),
                       ),
@@ -168,9 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _cubit.syncTasks();
-        },
+        onPressed: () {},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

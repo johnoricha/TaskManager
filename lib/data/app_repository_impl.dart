@@ -70,6 +70,7 @@ class AppRepositoryImpl extends AppRepository {
     final connected = await isConnected();
 
     if (connected) {
+      print('isConnected: $connected');
       for (final TaskEntity pendingTask in pendingTasks) {
         switch (pendingTask.syncStatus) {
           case SyncStatus.pendingCreate:
@@ -78,7 +79,8 @@ class AppRepositoryImpl extends AppRepository {
                 .toTaskDto());
 
             if (result is Success) {
-              await taskProvider.updateTask(pendingTask.copyWith(syncStatus: SyncStatus.synced));
+              await taskProvider.updateTask(
+                  pendingTask.copyWith(syncStatus: SyncStatus.synced));
             }
             break;
 
@@ -94,7 +96,8 @@ class AppRepositoryImpl extends AppRepository {
                 pendingTask.copyWith(syncStatus: SyncStatus.synced).toTaskDto(),
                 pendingTask.id);
             if (result is Success) {
-              await taskProvider.updateTask(pendingTask.copyWith(syncStatus: SyncStatus.synced));
+              await taskProvider.updateTask(
+                  pendingTask.copyWith(syncStatus: SyncStatus.synced));
             }
             break;
 
@@ -109,6 +112,8 @@ class AppRepositoryImpl extends AppRepository {
             break;
         }
       }
+    } else {
+      print('not connected');
     }
   }
 }
