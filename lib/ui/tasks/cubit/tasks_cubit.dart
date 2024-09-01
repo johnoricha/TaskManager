@@ -3,11 +3,9 @@ import 'package:task_manager/data/app_repository.dart';
 import 'package:task_manager/data/local/models/task_entity.dart';
 import 'package:task_manager/data/remote/models/api_response.dart';
 import 'package:task_manager/data/sync_status.dart';
-import 'package:task_manager/ui/tasks_state.dart';
+import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
 class TasksCubit extends Cubit<TasksState> {
-  // final TasksRepository repo;
-  // final TaskProvider dao;
   final AppRepository appRepository;
 
   TasksCubit(this.appRepository) : super(const TasksState(tasks: []));
@@ -40,8 +38,7 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   Future<void> createTask(Task task) async {
-    await appRepository.createTask(
-        const Task(id: 3, name: 'Title 3', completed: false,));
+    await appRepository.createTask(task);
   }
 
   Future<void> syncTasks() async {

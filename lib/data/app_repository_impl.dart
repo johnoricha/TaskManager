@@ -6,7 +6,7 @@ import 'package:task_manager/data/remote/models/api_response.dart';
 import 'package:task_manager/data/remote/models/task_dto.dart';
 import 'package:task_manager/data/repository/tasks_repository.dart';
 import 'package:task_manager/data/sync_status.dart';
-import 'package:task_manager/ui/tasks_state.dart';
+import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
 class AppRepositoryImpl extends AppRepository {
   TaskProvider taskProvider;
@@ -52,6 +52,18 @@ class AppRepositoryImpl extends AppRepository {
   }
 
   @override
+  Future<Task?> getTask(int id) async {
+    final result = await tasksRepository.getTask(id);
+
+    if (result is Success) {
+      final taskDto = (result as Success).data as TaskDto;
+      return taskDto.toTask();
+    }
+
+    return null;
+  }
+
+  @override
   Future<void> updateTask(Task task) async {
     return await taskProvider.updateTask(task.toEntity());
   }
@@ -85,20 +97,39 @@ class AppRepositoryImpl extends AppRepository {
             break;
 
           case SyncStatus.pendingDelete:
-            final result = await tasksRepository.deleteTask(pendingTask.id);
+            final result = await tasksRepository.deleteTask(pendingTask.id ?? 1);
             if (result is Success) {
-              await taskProvider.deleteTask(pendingTask.id);
+              await taskProvider.deleteTask(pendingTask.id ?? 1);
             }
             break;
 
           case SyncStatus.pendingUpdate:
-            final result = await tasksRepository.updateTask(
-                pendingTask.copyWith(syncStatus: SyncStatus.synced).toTaskDto(),
-                pendingTask.id);
+            final result = await tasksRepository.getTask(pendingTask.id ?? 1);
+
             if (result is Success) {
-              await taskProvider.updateTask(
-                  pendingTask.copyWith(syncStatus: SyncStatus.synced));
+              // task exists in remote DB, hence, update (sync)
+              final syncResult = await tasksRepository.updateTask(
+                  pendingTask
+                      .copyWith(syncStatus: SyncStatus.synced)
+                      .toTaskDto(),
+                  pendingTask.id ?? 1);
+
+              if (syncResult is Success) {
+                await taskProvider.updateTask(
+                    pendingTask.copyWith(syncStatus: SyncStatus.synced));
+              }
+            } else if (result is Failure && (result as Failure).code == 404) {
+              // task does not exist in remote DB, hence, create it
+              final createResult = await tasksRepository.createTask(pendingTask
+                  .copyWith(syncStatus: SyncStatus.synced)
+                  .toTaskDto());
+
+              if (createResult is Success) {
+                await taskProvider.updateTask(
+                    pendingTask.copyWith(syncStatus: SyncStatus.synced));
+              }
             }
+
             break;
 
           // case SyncStatus.notSynced:

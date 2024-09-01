@@ -2,13 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:task_manager/data/remote/models/task_dto.dart';
 import 'package:task_manager/data/sync_status.dart';
-import 'package:task_manager/ui/tasks_state.dart';
+import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
 part 'task_entity.g.dart';
 
 @JsonSerializable()
 class TaskEntity extends Equatable {
-  final int id;
+  final int? id;
   final String name;
   final SyncStatus syncStatus;
 
@@ -16,7 +16,7 @@ class TaskEntity extends Equatable {
   final bool completed;
 
   const TaskEntity({
-    required this.id,
+    this.id,
     required this.name,
     required this.completed,
     this.syncStatus = SyncStatus.notSynced,

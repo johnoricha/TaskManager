@@ -8,7 +8,8 @@ class Success<T> extends ApiResponse<T> {
 
 class Failure<T> extends ApiResponse<T> {
   String? errorMessage;
+  int? code;
 
-  Failure({required this.errorMessage});
+  Failure({required this.errorMessage, this.code});
 }
 

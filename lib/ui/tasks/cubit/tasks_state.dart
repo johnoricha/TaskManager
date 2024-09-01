@@ -16,13 +16,13 @@ class TasksState extends Equatable {
 
 class Task extends Equatable {
   final String name;
-  final int id;
+  final int? id;
   final bool completed;
   final SyncStatus syncStatus;
 
   const Task({
     required this.name,
-    required this.id,
+    this.id,
     required this.completed,
     this.syncStatus = SyncStatus.notSynced,
   });
