@@ -17,10 +17,7 @@ class TasksCubit extends Cubit<TasksState> {
     final result = await appRepository.getTasks();
 
     if (result is Success) {
-      print('result is success');
       final tasks = result.data as List<TaskEntity>;
-
-      print('tasks: ${tasks.map((e) => e.toTask()).toList()}');
 
       var filteredTasks =
           tasks.where((task) => task.syncStatus != SyncStatus.pendingDelete);
@@ -55,22 +52,39 @@ class TasksCubit extends Cubit<TasksState> {
       {TaskFilter taskFilter = TaskFilter.all}) async {
     emit(state.copyWith(getTasksStateStatus: LoadingState()));
 
-    final result = await appRepository.getBackedUpTasks();
+    final offlineTasksResult = await appRepository.getTasks();
 
-    if (result is Success) {
-      final tasks = result.data as List<TaskEntity>;
-      emit(
-        state.copyWith(
-          tasks: tasks.map((e) => e.toTask()).toList(),
-          getTasksStateStatus: SuccessState(),
-        ),
-      );
-    } else {
-      emit(
-        state.copyWith(
-          getTasksStateStatus: FailedState(),
-        ),
-      );
+    if (offlineTasksResult is Success) {
+      final tasks = offlineTasksResult.data as List<TaskEntity>;
+      if (tasks.isEmpty) {
+        //get from remote server
+        final result = await appRepository.getBackedUpTasks();
+
+        if (result is Success) {
+          final tasks = result.data as List<TaskEntity>;
+          emit(
+            state.copyWith(
+              tasks: tasks.map((e) => e.toTask()).toList(),
+              getTasksStateStatus: SuccessState(),
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+                getTasksStateStatus: FailedState(),
+                getBackUpTaskErrorMsg: (result as Failure).errorMessage),
+          );
+        }
+      } else {
+        //get tasks from local db
+        final result = await appRepository.getTasks();
+
+        if (result is Success) {
+          final tasks = result.data as List<TaskEntity>;
+          emit(state.copyWith(
+              tasks: tasks.map((task) => task.toTask()).toList()));
+        }
+      }
     }
   }
 
@@ -108,14 +122,15 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   Future<void> syncTasks() async {
-    print('syncTask called');
     emit(state.copyWith(syncTasksStateStatus: LoadingState()));
     final result = await appRepository.syncTasks();
 
     if (result is Success) {
       emit(state.copyWith(syncTasksStateStatus: SuccessState()));
     } else {
-      emit(state.copyWith(syncTasksStateStatus: FailedState()));
+      emit(state.copyWith(
+          syncTasksStateStatus: FailedState(),
+          getSyncTaskErrorMsg: (result as Failure).errorMessage));
     }
   }
 }

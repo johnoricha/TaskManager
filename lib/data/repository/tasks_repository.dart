@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:task_manager/core/di/initializer.dart';
 import 'package:task_manager/data/remote/models/api_response.dart';
 import 'package:task_manager/data/remote/models/task_dto.dart';
 import 'package:task_manager/data/remote/tasks_client.dart';
@@ -20,10 +21,7 @@ abstract class TasksRemoteRepository {
 class TasksRemoteRepositoryImpl extends TasksRemoteRepository {
   final RestClient restClient;
 
-  TasksRemoteRepositoryImpl()
-      : restClient =
-            RestClient(Dio(BaseOptions(
-                contentType: 'application/json')));
+  TasksRemoteRepositoryImpl() : restClient = RestClient(getIt.get<Dio>());
 
   @override
   Future<ApiResponse<List<TaskDto>>> getTasks() async {
@@ -50,22 +48,18 @@ class TasksRemoteRepositoryImpl extends TasksRemoteRepository {
 
   @override
   Future<ApiResponse<TaskDto?>> getTask(int id) async {
-    print('tasks Repo: getTask called.');
     try {
       final response = await restClient.getTask(id);
-
-      print('response: $response');
 
       if (response.response.statusCode! >= 200 &&
           response.response.statusCode! < 300) {
         // Process the response
         return Success(data: response.data);
-      } else if (response.response.statusCode! == 404) {
-        return Failure(
-            errorMessage: response.response.statusMessage, code: 404);
       } else {
         return Failure(errorMessage: 'Failed to load data');
       }
+    } on DioException catch (e) {
+      return Failure(errorMessage: 'not found', code: e.response?.statusCode);
     } on SocketException {
       return Failure(errorMessage: 'No internet connection');
     } on HttpException {

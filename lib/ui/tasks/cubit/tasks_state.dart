@@ -5,6 +5,8 @@ import 'package:task_manager/ui/cubit_status_state.dart';
 
 class TasksState extends Equatable {
   final List<Task> tasks;
+  final String? getBackUpTaskErrorMsg;
+  final String? syncTaskErrorMsg;
   final StateStatus? getTasksStateStatus;
   final StateStatus? updateTaskStateStatus;
   final StateStatus? deleteTaskStateStatus;
@@ -13,6 +15,8 @@ class TasksState extends Equatable {
 
   const TasksState({
     required this.tasks,
+    this.getBackUpTaskErrorMsg,
+    this.syncTaskErrorMsg,
     this.getTasksStateStatus,
     this.updateTaskStateStatus,
     this.deleteTaskStateStatus,
@@ -27,9 +31,15 @@ class TasksState extends Equatable {
     StateStatus? deleteTaskStateStatus,
     StateStatus? createTaskStateStatus,
     StateStatus? syncTasksStateStatus,
+    String? getBackUpTaskErrorMsg,
+    String? getSyncTaskErrorMsg,
   }) =>
       TasksState(
         tasks: tasks ?? this.tasks,
+        getBackUpTaskErrorMsg:
+            getBackUpTaskErrorMsg ?? this.getBackUpTaskErrorMsg,
+        syncTaskErrorMsg:
+        getSyncTaskErrorMsg ?? this.syncTaskErrorMsg,
         getTasksStateStatus: getTasksStateStatus ?? const InitialState(),
         updateTaskStateStatus: updateTaskStateStatus ?? const InitialState(),
         deleteTaskStateStatus: deleteTaskStateStatus ?? const InitialState(),
@@ -40,6 +50,8 @@ class TasksState extends Equatable {
   @override
   List<Object?> get props => [
         tasks,
+        getBackUpTaskErrorMsg,
+    syncTaskErrorMsg,
         getTasksStateStatus,
         updateTaskStateStatus,
         deleteTaskStateStatus,

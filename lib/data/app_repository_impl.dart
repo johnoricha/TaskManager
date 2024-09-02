@@ -21,8 +21,6 @@ class AppRepositoryImpl extends AppRepository {
 
   @override
   Future<ApiResponse<List<TaskEntity>>> getTasks() async {
-    print('appRepo: getTasks called.');
-
     final result = await taskProvider.getTasks();
 
     if (result is Success) {
@@ -33,29 +31,24 @@ class AppRepositoryImpl extends AppRepository {
 
   @override
   Future<ApiResponse<List<TaskEntity>>> getBackedUpTasks() async {
-    print('appRepo: getTasks called.');
 
-    final result = await tasksRemoteRepository.getTasks();
+    final connected = await isConnected();
 
-    if (result is Success) {
-      print('result is success');
-      final taskDtos = (result as Success).data as List<TaskDto>;
+    if (connected) {
+      final result = await tasksRemoteRepository.getTasks();
 
-      print('taskDtos: $taskDtos');
-      for (TaskDto taskDto in taskDtos) {
-        await taskProvider.insertTask(taskDto.toTaskEntity());
+      if (result is Success) {
+        final taskDtos = (result as Success).data as List<TaskDto>;
+        for (TaskDto taskDto in taskDtos) {
+          await taskProvider.insertTask(taskDto.toTaskEntity());
+        }
+
+        return taskProvider.getTasks();
       }
-
-      final tasks = await taskProvider.getTasks();
-
-      print('taskEntities: $tasks');
-
-      return taskProvider.getTasks();
+      return Failure(errorMessage: (result as Failure).errorMessage);
+    } else {
+      return Failure(errorMessage: 'No internet connection');
     }
-
-    print('appRepo: getTasks failed.: ${(result as Failure).errorMessage}');
-
-    return Failure(errorMessage: (result as Failure).errorMessage);
   }
 
   @override
@@ -87,7 +80,6 @@ class AppRepositoryImpl extends AppRepository {
       final connected = await isConnected();
 
       if (connected) {
-        print('isConnected: $connected');
         for (final TaskEntity pendingTask in pendingTasks) {
           switch (pendingTask.syncStatus) {
             case SyncStatus.pendingCreate:
@@ -127,6 +119,7 @@ class AppRepositoryImpl extends AppRepository {
                 }
               } else if (result is Failure && (result as Failure).code == 404) {
                 // task does not exist in remote DB, hence, create it
+                print('task not found');
                 final createResult = await tasksRemoteRepository.createTask(
                     pendingTask
                         .copyWith(syncStatus: SyncStatus.synced)
@@ -144,7 +137,7 @@ class AppRepositoryImpl extends AppRepository {
           }
         }
       } else {
-        print('not connected');
+        return Failure(errorMessage: 'Oops! no internet connection');
       }
       return Success(data: null);
     }

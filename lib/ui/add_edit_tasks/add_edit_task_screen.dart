@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_manager/core/di/initializer.dart';
+import 'package:task_manager/ui/cubit_status_state.dart';
 import 'package:task_manager/ui/tasks/cubit/tasks_cubit.dart';
 import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
@@ -20,48 +22,71 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.isEditMode ? 'Edit Task' : 'Add Task'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(hintText: 'Enter task name'),
-                      controller: _textEditingController,
-                      onChanged: (value) {
-                        setState(() {
-                          _isBtnEnabled = _textEditingController.text.isEmpty;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                FilledButton(
-                    onPressed: _isBtnEnabled
-                        ? null
-                        : () {
-                            widget.isEditMode
-                                ? _cubit.updateTask(Task(
-                                    id: widget.task?.id,
-                                    name: _textEditingController.text,
-                                    completed: widget.task?.completed ?? false))
-                                : _cubit.createTask(Task(
-                                    name: _textEditingController.text,
-                                    completed: false));
-                          },
-                    child: Text(widget.isEditMode ? 'Update Task' : 'Add Task'))
-              ]),
+    return BlocConsumer<TasksCubit, TasksState>(
+      bloc: _cubit,
+      listener: (context, state) {
+        if (state.createTaskStateStatus is SuccessState) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Task successfully added"),
+          ));
+
+          Navigator.pop(context);
+        }
+
+        if (state.updateTaskStateStatus is SuccessState) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Task updated"),
+          ));
+          Navigator.pop(context);
+        }
+      },
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.isEditMode ? 'Edit Task' : 'Add Task'),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    children: [
+                      TextFormField(
+                        decoration:
+                            const InputDecoration(hintText: 'Enter task name'),
+                        controller: _textEditingController,
+                        onChanged: (value) {
+                          setState(() {
+                            _isBtnEnabled =
+                                _textEditingController.text.isNotEmpty;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  FilledButton(
+                      onPressed: _isBtnEnabled
+                          ? () {
+                              widget.isEditMode
+                                  ? _cubit.updateTask(Task(
+                                      id: widget.task?.id,
+                                      name: _textEditingController.text,
+                                      completed:
+                                          widget.task?.completed ?? false))
+                                  : _cubit.createTask(Task(
+                                      name: _textEditingController.text,
+                                      completed: false));
+                            }
+                          : null,
+                      child:
+                          Text(widget.isEditMode ? 'Update Task' : 'Add Task'))
+                ]),
+          ),
         ),
       ),
     );

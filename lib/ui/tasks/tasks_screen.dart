@@ -50,8 +50,8 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         }
 
         if (state.syncTasksStateStatus is FailedState) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Oops! Failed to sync tasks"),
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.syncTaskErrorMsg ?? "Oops! Failed to sync tasks"),
           ));
         }
       },
@@ -77,7 +77,9 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        const AddEditTaskScreen(isEditMode: false)));
+                        const AddEditTaskScreen(isEditMode: false))).then((_) {
+              _cubit.getTasks();
+            });
           },
           tooltip: 'Add Task',
           child: const Icon(Icons.add),
@@ -89,10 +91,6 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   Widget buildListContainer(BuildContext context, TasksState state) {
     if (state.getTasksStateStatus is LoadingState) {
       return const CircularProgressIndicator();
-    }
-
-    if (state.getTasksStateStatus is FailedState) {
-      return const Text('Failed to get tasks');
     }
 
     return Column(
@@ -224,7 +222,9 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                           task: task,
                         ),
                       ),
-                    );
+                    ).then((_) {
+                      _cubit.getTasks();
+                    });
                   },
                   onDismiss: () {
                     _cubit.deleteTask(task);
