@@ -10,9 +10,9 @@ import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
 class AppRepositoryImpl extends AppRepository {
   TaskProvider taskProvider;
-  TasksRepository tasksRepository;
+  TasksRemoteRepository tasksRemoteRepository;
 
-  AppRepositoryImpl(this.taskProvider, this.tasksRepository);
+  AppRepositoryImpl(this.taskProvider, this.tasksRemoteRepository);
 
   Future<bool> isConnected() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
@@ -22,27 +22,65 @@ class AppRepositoryImpl extends AppRepository {
   @override
   Future<ApiResponse<List<TaskEntity>>> getTasks() async {
     print('appRepo: getTasks called.');
-    final result = await tasksRepository.getTasks();
 
-    if (result is Success) {
-      print('result is success');
-      final taskDtos = (result as Success).data as List<TaskDto>;
+    final connected = await isConnected();
 
-      print('taskDtos: $taskDtos');
-      for (TaskDto taskDto in taskDtos) {
-        await taskProvider.insertTask(taskDto.toTaskEntity());
+    // if (connected) {
+    //   final result = await tasksRemoteRepository.getTasks();
+    //
+    //   if (result is Success) {
+    //     print('result is success');
+    //     final taskDtos = (result as Success).data as List<TaskDto>;
+    //
+    //     print('taskDtos: $taskDtos');
+    //     for (TaskDto taskDto in taskDtos) {
+    //       await taskProvider.insertTask(taskDto.toTaskEntity());
+    //     }
+    //
+    //     final tasks = await taskProvider.getTasks();
+    //
+    //     print('taskEntities: $tasks');
+    //
+    //     return Success(data: tasks);
+    //   }
+    //
+    //   print('appRepo: getTasks failed.: ${(result as Failure).errorMessage}');
+    //
+    //   return Failure(errorMessage: (result as Failure).errorMessage);
+    // } else {
+      final tasks = await taskProvider.getTasks();
+      return Success(data: tasks);
+    // }
+  }
+
+  @override
+  Future<ApiResponse<List<TaskEntity>>> getBackedUpTasks() async {
+    print('appRepo: getTasks called.');
+
+    final connected = await isConnected();
+
+      final result = await tasksRemoteRepository.getTasks();
+
+      if (result is Success) {
+        print('result is success');
+        final taskDtos = (result as Success).data as List<TaskDto>;
+
+        print('taskDtos: $taskDtos');
+        for (TaskDto taskDto in taskDtos) {
+          await taskProvider.insertTask(taskDto.toTaskEntity());
+        }
+
+        final tasks = await taskProvider.getTasks();
+
+        print('taskEntities: $tasks');
+
+        return Success(data: tasks);
       }
 
-      final tasks = await taskProvider.getTasks();
+      print('appRepo: getTasks failed.: ${(result as Failure).errorMessage}');
 
-      print('taskEntities: $tasks');
+      return Failure(errorMessage: (result as Failure).errorMessage);
 
-      return Success(data: tasks);
-    }
-
-    print('appRepo: getTasks failed.: ${(result as Failure).errorMessage}');
-
-    return Failure(errorMessage: (result as Failure).errorMessage);
   }
 
   @override
@@ -53,7 +91,7 @@ class AppRepositoryImpl extends AppRepository {
 
   @override
   Future<Task?> getTask(int id) async {
-    final result = await tasksRepository.getTask(id);
+    final result = await tasksRemoteRepository.getTask(id);
 
     if (result is Success) {
       final taskDto = (result as Success).data as TaskDto;
@@ -86,7 +124,7 @@ class AppRepositoryImpl extends AppRepository {
       for (final TaskEntity pendingTask in pendingTasks) {
         switch (pendingTask.syncStatus) {
           case SyncStatus.pendingCreate:
-            final result = await tasksRepository.createTask(pendingTask
+            final result = await tasksRemoteRepository.createTask(pendingTask
                 .copyWith(syncStatus: SyncStatus.synced)
                 .toTaskDto());
 
@@ -97,18 +135,20 @@ class AppRepositoryImpl extends AppRepository {
             break;
 
           case SyncStatus.pendingDelete:
-            final result = await tasksRepository.deleteTask(pendingTask.id ?? 1);
+            final result =
+                await tasksRemoteRepository.deleteTask(pendingTask.id ?? 1);
             if (result is Success) {
               await taskProvider.deleteTask(pendingTask.id ?? 1);
             }
             break;
 
           case SyncStatus.pendingUpdate:
-            final result = await tasksRepository.getTask(pendingTask.id ?? 1);
+            final result =
+                await tasksRemoteRepository.getTask(pendingTask.id ?? 1);
 
             if (result is Success) {
               // task exists in remote DB, hence, update (sync)
-              final syncResult = await tasksRepository.updateTask(
+              final syncResult = await tasksRemoteRepository.updateTask(
                   pendingTask
                       .copyWith(syncStatus: SyncStatus.synced)
                       .toTaskDto(),
@@ -120,24 +160,17 @@ class AppRepositoryImpl extends AppRepository {
               }
             } else if (result is Failure && (result as Failure).code == 404) {
               // task does not exist in remote DB, hence, create it
-              final createResult = await tasksRepository.createTask(pendingTask
-                  .copyWith(syncStatus: SyncStatus.synced)
-                  .toTaskDto());
+              final createResult = await tasksRemoteRepository.createTask(
+                  pendingTask
+                      .copyWith(syncStatus: SyncStatus.synced)
+                      .toTaskDto());
 
               if (createResult is Success) {
                 await taskProvider.updateTask(
                     pendingTask.copyWith(syncStatus: SyncStatus.synced));
               }
             }
-
             break;
-
-          // case SyncStatus.notSynced:
-          //   print('syncing: pending task: $pendingTask');
-          //   await tasksRepository.createTask(pendingTask
-          //       .copyWith(syncStatus: SyncStatus.synced)
-          //       .toTaskDto());
-          //   break;
 
           default:
             break;

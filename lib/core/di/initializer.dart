@@ -16,7 +16,7 @@ void initialize() {
   //repos
   getIt
       .registerLazySingleton<TaskProvider>(() => TaskProviderImpl(getIt.get()));
-  getIt.registerLazySingleton<TasksRepository>(() => TasksRepositoryImpl());
+  getIt.registerLazySingleton<TasksRemoteRepository>(() => TasksRemoteRepositoryImpl());
   getIt.registerLazySingleton<AppRepository>(
       () => AppRepositoryImpl(getIt.get(), getIt.get()));
 

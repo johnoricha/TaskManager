@@ -5,7 +5,7 @@ import 'package:task_manager/data/remote/models/api_response.dart';
 import 'package:task_manager/data/remote/models/task_dto.dart';
 import 'package:task_manager/data/remote/tasks_client.dart';
 
-abstract class TasksRepository {
+abstract class TasksRemoteRepository {
   Future<ApiResponse<List<TaskDto>>> getTasks();
 
   Future<ApiResponse<TaskDto?>> getTask(int id);
@@ -17,12 +17,13 @@ abstract class TasksRepository {
   Future<ApiResponse<void>> deleteTask(int id);
 }
 
-class TasksRepositoryImpl extends TasksRepository {
+class TasksRemoteRepositoryImpl extends TasksRemoteRepository {
   final RestClient restClient;
 
-  TasksRepositoryImpl()
+  TasksRemoteRepositoryImpl()
       : restClient =
-            RestClient(Dio(BaseOptions(contentType: 'application/json')));
+            RestClient(Dio(BaseOptions(
+                contentType: 'application/json')));
 
   @override
   Future<ApiResponse<List<TaskDto>>> getTasks() async {

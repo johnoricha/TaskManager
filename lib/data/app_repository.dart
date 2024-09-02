@@ -9,6 +9,8 @@ abstract class AppRepository {
 
   Future<ApiResponse<dynamic>> getTasks();
 
+  Future<ApiResponse<dynamic>> getBackedUpTasks();
+
   Future<void> updateTask(Task task);
 
   Future<void> deleteTask(int taskId);

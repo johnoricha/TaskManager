@@ -10,7 +10,7 @@ class TasksCubit extends Cubit<TasksState> {
 
   TasksCubit(this.appRepository) : super(const TasksState(tasks: []));
 
-  Future<void> getTasks() async {
+  Future<void> getTasks({TaskFilter taskFilter = TaskFilter.all}) async {
     final result = await appRepository.getTasks();
 
     if (result is Success) {
@@ -19,6 +19,33 @@ class TasksCubit extends Cubit<TasksState> {
 
       print('tasks: ${tasks.map((e) => e.toTask()).toList()}');
 
+      var filteredTasks = tasks;
+
+      switch (taskFilter) {
+        case TaskFilter.incomplete:
+          filteredTasks =
+              tasks.where((task) => task.completed == false).toList();
+          break;
+        case TaskFilter.completed:
+          filteredTasks =
+              tasks.where((task) => task.completed == true).toList();
+          break;
+        default:
+      }
+
+      emit(
+        state.copyWith(
+          tasks: filteredTasks.map((e) => e.toTask()).toList(),
+        ),
+      );
+    }
+  }
+
+  Future<void> getBackedUpTasks({TaskFilter taskFilter = TaskFilter.all}) async {
+    final result = await appRepository.getBackedUpTasks();
+
+    if (result is Success) {
+      final tasks = result.data as List<TaskEntity>;
       emit(
         state.copyWith(
           tasks: tasks.map((e) => e.toTask()).toList(),
@@ -44,4 +71,10 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> syncTasks() async {
     await appRepository.syncTasks();
   }
+}
+
+enum TaskFilter {
+  all,
+  completed,
+  incomplete,
 }
