@@ -16,6 +16,7 @@ class AddEditTaskScreen extends StatefulWidget {
 class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   late TextEditingController _textEditingController;
   final TasksCubit _cubit = getIt.get<TasksCubit>();
+  bool _isBtnEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,27 +26,43 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         title: Text(widget.isEditMode ? 'Edit Task' : 'Add Task'),
       ),
       body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                controller: _textEditingController,
-                onChanged: (value) {
-                },
-              ),
-              OutlinedButton(
-                  onPressed: () {
-                    widget.isEditMode
-                        ? _cubit.updateTask(Task(
-                            id: widget.task?.id,
-                            name: _textEditingController.text,
-                            completed: widget.task?.completed ?? false))
-                        : _cubit.createTask(Task(
-                            name: _textEditingController.text,
-                            completed: false));
-                  },
-                  child: Text(widget.isEditMode ? 'Update Task' : 'Add Task'))
-            ]),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(hintText: 'Enter task name'),
+                      controller: _textEditingController,
+                      onChanged: (value) {
+                        setState(() {
+                          _isBtnEnabled = _textEditingController.text.isEmpty;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                FilledButton(
+                    onPressed: _isBtnEnabled
+                        ? null
+                        : () {
+                            widget.isEditMode
+                                ? _cubit.updateTask(Task(
+                                    id: widget.task?.id,
+                                    name: _textEditingController.text,
+                                    completed: widget.task?.completed ?? false))
+                                : _cubit.createTask(Task(
+                                    name: _textEditingController.text,
+                                    completed: false));
+                          },
+                    child: Text(widget.isEditMode ? 'Update Task' : 'Add Task'))
+              ]),
+        ),
       ),
     );
   }

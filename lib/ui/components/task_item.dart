@@ -7,11 +7,13 @@ class TaskItem extends StatefulWidget {
     required this.task,
     required this.onItemClick,
     required this.onChecked,
+    required this.onDismiss,
   });
 
   final Task task;
   final Function(Task task) onItemClick;
   final Function(Task task, bool checked) onChecked;
+  final VoidCallback onDismiss;
 
   @override
   State<TaskItem> createState() => _TaskItemState();
@@ -32,31 +34,50 @@ class _TaskItemState extends State<TaskItem> {
       onTap: () {
         widget.onItemClick(widget.task);
       },
-      child: Material(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.task.name,
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.primary),
-                ),
-                Checkbox(
-                    value: _isCompleted,
-                    onChanged: (checked) {
-                      setState(() {
-                        _isCompleted = !_isCompleted;
-                      });
-                      widget.onChecked(widget.task, checked!);
-                    })
-              ],
-            ),
-            const Divider()
-          ],
+      child: Dismissible(
+        key: ValueKey(widget.task.id.toString()),
+        background: Container(
+          padding: const EdgeInsets.only(left: 20),
+          alignment: Alignment.centerLeft,
+          color: Colors.red,
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        secondaryBackground: Container(
+          padding: const EdgeInsets.only(right: 20),
+          alignment: Alignment.centerRight,
+          color: Colors.red,
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        onDismissed: (direction) {
+          widget.onDismiss();
+        },
+        child: Material(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      widget.task.name,
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ),
+                  Checkbox(
+                      value: _isCompleted,
+                      onChanged: (checked) {
+                        setState(() {
+                          _isCompleted = !_isCompleted;
+                        });
+                        widget.onChecked(widget.task, checked!);
+                      })
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
