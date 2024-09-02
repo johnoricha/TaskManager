@@ -95,9 +95,19 @@ class AppRepositoryImpl extends AppRepository {
 
             case SyncStatus.pendingDelete:
               final result =
-                  await tasksRemoteRepository.deleteTask(pendingTask.id ?? 1);
+                  await tasksRemoteRepository.getTask(pendingTask.id!);
               if (result is Success) {
-                await taskProvider.deleteTask(pendingTask.id ?? 1);
+                // task exists in remote DB, hence, delete (sync)
+                final syncResult = await tasksRemoteRepository.deleteTask(
+                    pendingTask.id!);
+
+                if (syncResult is Success) {
+                  await taskProvider.deleteTask(
+                      pendingTask.id!);
+                }
+              } else if (result is Failure && (result as Failure).code == 404) {
+                // task does not exist in remote DB, hence, delete it from local db
+                  await taskProvider.deleteTask(pendingTask.id ?? 1);
               }
               break;
 
