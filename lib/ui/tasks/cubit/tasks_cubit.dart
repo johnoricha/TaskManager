@@ -52,39 +52,35 @@ class TasksCubit extends Cubit<TasksState> {
       {TaskFilter taskFilter = TaskFilter.all}) async {
     emit(state.copyWith(getTasksStateStatus: LoadingState()));
 
-    final offlineTasksResult = await appRepository.getTasks();
+    final onlineTasksResult = await appRepository.getBackedUpTasks();
 
-    if (offlineTasksResult is Success) {
-      final tasks = offlineTasksResult.data as List<TaskEntity>;
-      if (tasks.isEmpty) {
-        //get from remote server
-        final result = await appRepository.getBackedUpTasks();
+    if (onlineTasksResult is Success) {
+      final tasks = onlineTasksResult.data as List<TaskEntity>;
 
-        if (result is Success) {
-          final tasks = result.data as List<TaskEntity>;
-          emit(
-            state.copyWith(
-              tasks: tasks.map((e) => e.toTask()).toList(),
-              getTasksStateStatus: SuccessState(),
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-                getTasksStateStatus: FailedState(),
-                getBackUpTaskErrorMsg: (result as Failure).errorMessage),
-          );
-        }
-      } else {
-        //get tasks from local db
-        final result = await appRepository.getTasks();
+      var filteredTasks =
+          tasks.where((task) => task.syncStatus != SyncStatus.pendingDelete);
 
-        if (result is Success) {
-          final tasks = result.data as List<TaskEntity>;
-          emit(state.copyWith(
-              tasks: tasks.map((task) => task.toTask()).toList()));
-        }
+      switch (taskFilter) {
+        case TaskFilter.incomplete:
+          filteredTasks = tasks
+              .where((task) =>
+                  task.completed == false &&
+                  task.syncStatus != SyncStatus.pendingDelete)
+              .toList();
+          break;
+        case TaskFilter.completed:
+          filteredTasks = tasks
+              .where((task) =>
+                  task.completed == true &&
+                  task.syncStatus != SyncStatus.pendingDelete)
+              .toList();
+          break;
+        default:
       }
+
+      emit(state.copyWith(
+          tasks: filteredTasks.map((e) => e.toTask()).toList(),
+          getTasksStateStatus: SuccessState()));
     }
   }
 

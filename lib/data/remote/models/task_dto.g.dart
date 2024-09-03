@@ -7,7 +7,7 @@ part of 'task_dto.dart';
 // **************************************************************************
 
 TaskDto _$TaskDtoFromJson(Map<String, dynamic> json) => TaskDto(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
       completed: json['completed'] as bool,
       syncStatus:

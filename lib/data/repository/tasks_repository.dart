@@ -21,7 +21,11 @@ abstract class TasksRemoteRepository {
 class TasksRemoteRepositoryImpl extends TasksRemoteRepository {
   final RestClient restClient;
 
-  TasksRemoteRepositoryImpl() : restClient = RestClient(getIt.get<Dio>());
+  TasksRemoteRepositoryImpl()
+      : restClient = RestClient(getIt.get<Dio>(),
+            baseUrl: Platform.isAndroid
+                ? 'http://10.0.2.2:3001/taskmanager/api'
+                : 'http://localhost:3001/taskmanager/api');
 
   @override
   Future<ApiResponse<List<TaskDto>>> getTasks() async {

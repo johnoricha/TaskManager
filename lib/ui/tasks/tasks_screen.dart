@@ -51,7 +51,8 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
 
         if (state.syncTasksStateStatus is FailedState) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.syncTaskErrorMsg ?? "Oops! Failed to sync tasks"),
+            content:
+                Text(state.syncTaskErrorMsg ?? "Oops! Failed to sync tasks"),
           ));
         }
       },
@@ -68,8 +69,27 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                 icon: const Icon(Icons.sync))
           ],
         ),
-        body: Center(
-          child: buildListContainer(context, state),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            TaskFilter filter;
+
+            switch (_selectedCategoryIndex) {
+              case 1:
+                filter = TaskFilter.completed;
+                break;
+              case 2:
+                filter = TaskFilter.incomplete;
+              default:
+                filter = TaskFilter.all;
+            }
+
+            if (filter == TaskFilter.all) {
+              await _cubit.getBackedUpTasks(taskFilter: filter);
+            }
+          },
+          child: Center(
+            child: buildListContainer(context, state),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

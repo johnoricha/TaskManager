@@ -12,9 +12,7 @@ class _RestClient implements RestClient {
   _RestClient(
     this._dio, {
     this.baseUrl,
-  }) {
-    baseUrl ??= 'http://10.0.2.2:3001/taskmanager/api';
-  }
+  });
 
   final Dio _dio;
 

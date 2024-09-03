@@ -4,7 +4,7 @@ import 'package:task_manager/data/remote/models/task_dto.dart';
 
 part 'tasks_client.g.dart';
 
-@RestApi(baseUrl: 'http://10.0.2.2:3001/taskmanager/api')
+@RestApi()
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 

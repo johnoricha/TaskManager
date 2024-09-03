@@ -7,7 +7,7 @@ part of 'task_entity.dart';
 // **************************************************************************
 
 TaskEntity _$TaskEntityFromJson(Map<String, dynamic> json) => TaskEntity(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
       completed: TaskEntity._boolFromInt((json['completed'] as num).toInt()),
       syncStatus:
