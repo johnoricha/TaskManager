@@ -52,23 +52,23 @@ class AppRepositoryImpl extends AppRepository {
   }
 
   @override
-  Future<ApiResponse<void>> createTask(Task task) async {
+  Future<ApiResponse<dynamic>> createTask(Task task) async {
     return taskProvider.insertTask(
         task.copyWith(syncStatus: SyncStatus.pendingCreate).toEntity());
   }
 
   @override
-  Future<ApiResponse<void>> updateTask(Task task) async {
+  Future<ApiResponse<dynamic>> updateTask(Task task) async {
     return taskProvider.updateTask(task.toEntity());
   }
 
   @override
-  Future<ApiResponse<void>> deleteTask(int taskId) async {
+  Future<ApiResponse<dynamic>> deleteTask(int taskId) async {
     return taskProvider.deleteTask(taskId);
   }
 
   @override
-  Future<ApiResponse<void>> syncTasks() async {
+  Future<ApiResponse<dynamic>> syncTasks() async {
     final result = await taskProvider.getTasks();
 
     if (result is Success) {

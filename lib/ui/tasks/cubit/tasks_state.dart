@@ -17,11 +17,11 @@ class TasksState extends Equatable {
     required this.tasks,
     this.getBackUpTaskErrorMsg,
     this.syncTaskErrorMsg,
-    this.getTasksStateStatus,
-    this.updateTaskStateStatus,
-    this.deleteTaskStateStatus,
-    this.createTaskStateStatus,
-    this.syncTasksStateStatus,
+    this.getTasksStateStatus = const InitialState(),
+    this.updateTaskStateStatus = const InitialState(),
+    this.deleteTaskStateStatus = const InitialState(),
+    this.createTaskStateStatus = const InitialState(),
+    this.syncTasksStateStatus = const InitialState(),
   });
 
   TasksState copyWith({
@@ -32,14 +32,13 @@ class TasksState extends Equatable {
     StateStatus? createTaskStateStatus,
     StateStatus? syncTasksStateStatus,
     String? getBackUpTaskErrorMsg,
-    String? getSyncTaskErrorMsg,
+    String? syncTaskErrorMsg,
   }) =>
       TasksState(
         tasks: tasks ?? this.tasks,
         getBackUpTaskErrorMsg:
             getBackUpTaskErrorMsg ?? this.getBackUpTaskErrorMsg,
-        syncTaskErrorMsg:
-        getSyncTaskErrorMsg ?? this.syncTaskErrorMsg,
+        syncTaskErrorMsg: syncTaskErrorMsg ?? this.syncTaskErrorMsg,
         getTasksStateStatus: getTasksStateStatus ?? const InitialState(),
         updateTaskStateStatus: updateTaskStateStatus ?? const InitialState(),
         deleteTaskStateStatus: deleteTaskStateStatus ?? const InitialState(),
@@ -51,7 +50,7 @@ class TasksState extends Equatable {
   List<Object?> get props => [
         tasks,
         getBackUpTaskErrorMsg,
-    syncTaskErrorMsg,
+        syncTaskErrorMsg,
         getTasksStateStatus,
         updateTaskStateStatus,
         deleteTaskStateStatus,

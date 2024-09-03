@@ -130,7 +130,7 @@ class TasksCubit extends Cubit<TasksState> {
     } else {
       emit(state.copyWith(
           syncTasksStateStatus: FailedState(),
-          getSyncTaskErrorMsg: (result as Failure).errorMessage));
+          syncTaskErrorMsg: (result as Failure).errorMessage));
     }
   }
 }
