@@ -22,10 +22,22 @@ void main() {
     late AppRepositoryMock appRepositoryMock;
     late TasksCubit tasksCubit;
     const expectedTasks = [
-      Task(id: 1, name: 'Task 1', completed: false),
-      Task(id: 2, name: 'Task 2', completed: false),
+      Task(
+          id: 1,
+          name: 'Task 1',
+          description: 'description 1',
+          completed: false),
+      Task(
+          id: 2,
+          name: 'Task 2',
+          description: 'description 2',
+          completed: false),
     ];
-    const updatedTask = Task(id: 1, name: 'Task 1 updated', completed: true);
+    const updatedTask = Task(
+        id: 1,
+        name: 'Task 1 updated',
+        description: 'description 1 updated',
+        completed: true);
 
     setUp(() {
       appRepositoryMock = AppRepositoryMock();
@@ -37,8 +49,16 @@ void main() {
       build: () {
         when(() => appRepositoryMock.getTasks()).thenAnswer((answer) async {
           return Success(data: [
-            const TaskEntity(id: 1, name: 'Task 1', completed: false),
-            const TaskEntity(id: 2, name: 'Task 2', completed: false),
+            const TaskEntity(
+                id: 1,
+                name: 'Task 1',
+                description: 'description 1',
+                completed: false),
+            const TaskEntity(
+                id: 2,
+                name: 'Task 2',
+                description: 'description 2',
+                completed: false),
           ]);
         });
         return tasksCubit;
@@ -57,8 +77,16 @@ void main() {
             .thenAnswer((_) async => Success(data: null));
         when(() => appRepositoryMock.getTasks()).thenAnswer((_) async {
           return Success(data: [
-            const TaskEntity(id: 1, name: 'Task 1 updated', completed: true),
-            const TaskEntity(id: 2, name: 'Task 2', completed: false),
+            const TaskEntity(
+                id: 1,
+                name: 'Task 1 updated',
+                description: 'description 1 updated',
+                completed: true),
+            const TaskEntity(
+                id: 2,
+                name: 'Task 2',
+                description: 'description 2',
+                completed: false),
           ]);
         });
 
@@ -94,6 +122,7 @@ void main() {
             const TaskEntity(
                 id: 3,
                 name: 'Task 3',
+                description: 'description 3',
                 completed: false,
                 syncStatus: SyncStatus.synced)
           ]);
@@ -102,8 +131,11 @@ void main() {
         return tasksCubit;
       },
       act: (cubit) async {
-        await cubit
-            .createTask(const Task(id: 3, name: 'Task 3', completed: false));
+        await cubit.createTask(const Task(
+            id: 3,
+            name: 'Task 3',
+            description: 'description 3',
+            completed: false));
         await cubit.syncTasks();
         await cubit.getTasks();
       },
@@ -117,6 +149,7 @@ void main() {
           Task(
               id: 3,
               name: 'Task 3',
+              description: 'description 3',
               completed: false,
               syncStatus: SyncStatus.synced)
         ], getTasksStateStatus: SuccessState()),
@@ -140,10 +173,18 @@ void main() {
       },
       act: (cubit) async {
         await cubit.createTask(
-          const Task(id: 1, name: 'Task 1', completed: false),
+          const Task(
+              id: 1,
+              name: 'Task 1',
+              description: 'description 1',
+              completed: false),
         );
         await cubit.deleteTask(
-          const Task(id: 1, name: 'Task 1', completed: false),
+          const Task(
+              id: 1,
+              name: 'Task 1',
+              description: 'description 1',
+              completed: false),
         );
         await cubit.getTasks();
       },
@@ -164,7 +205,11 @@ void main() {
         });
         when(() => appRepositoryMock.getBackedUpTasks()).thenAnswer((_) async {
           return Success(data: [
-            const TaskEntity(id: 3, name: 'Task 3', completed: false),
+            const TaskEntity(
+                id: 3,
+                name: 'Task 3',
+                description: 'description 3',
+                completed: false),
           ]);
         });
 
@@ -174,7 +219,13 @@ void main() {
       expect: () => [
         TasksState(tasks: const [], getTasksStateStatus: LoadingState()),
         TasksState(
-          tasks: const [Task(id: 3, name: 'Task 3', completed: false)],
+          tasks: const [
+            Task(
+                id: 3,
+                name: 'Task 3',
+                description: 'description 3',
+                completed: false)
+          ],
           getTasksStateStatus: SuccessState(),
         ),
       ],

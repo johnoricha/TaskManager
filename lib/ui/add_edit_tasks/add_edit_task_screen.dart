@@ -76,10 +76,12 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                                   ? _cubit.updateTask(Task(
                                       id: widget.task?.id,
                                       name: _textEditingController.text,
+                                      description: '',
                                       completed:
                                           widget.task?.completed ?? false))
                                   : _cubit.createTask(Task(
                                       name: _textEditingController.text,
+                                      description: '',
                                       completed: false));
                             }
                           : null,

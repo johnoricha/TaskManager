@@ -61,26 +61,30 @@ class TasksState extends Equatable {
 
 class Task extends Equatable {
   final String name;
+  final String description;
   final int? id;
   final bool completed;
   final SyncStatus syncStatus;
 
   const Task({
     required this.name,
+    required this.description,
     this.id,
     required this.completed,
     this.syncStatus = SyncStatus.notSynced,
   });
 
   Task copyWith({
-    String? title,
+    String? name,
+    String? description,
     int? id,
     int? userId,
     bool? completed,
     SyncStatus? syncStatus,
   }) =>
       Task(
-        name: title ?? this.name,
+        name: name ?? this.name,
+        description: description ?? this.description,
         id: id ?? this.id,
         completed: completed ?? this.completed,
         syncStatus: syncStatus ?? this.syncStatus,
@@ -88,11 +92,12 @@ class Task extends Equatable {
 
   TaskEntity toEntity() => TaskEntity(
         id: id,
+        description: description,
         name: name,
         completed: completed,
         syncStatus: syncStatus,
       );
 
   @override
-  List<Object?> get props => [name, id, completed, syncStatus];
+  List<Object?> get props => [name, description, id, completed, syncStatus];
 }

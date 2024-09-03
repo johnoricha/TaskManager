@@ -9,6 +9,7 @@ part of 'task_dto.dart';
 TaskDto _$TaskDtoFromJson(Map<String, dynamic> json) => TaskDto(
       id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
+      description: json['description'] as String,
       completed: json['completed'] as bool,
       syncStatus:
           $enumDecodeNullable(_$SyncStatusEnumMap, json['syncStatus']) ??
@@ -18,6 +19,7 @@ TaskDto _$TaskDtoFromJson(Map<String, dynamic> json) => TaskDto(
 Map<String, dynamic> _$TaskDtoToJson(TaskDto instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'description': instance.description,
       'completed': instance.completed,
       'syncStatus': _$SyncStatusEnumMap[instance.syncStatus]!,
     };
