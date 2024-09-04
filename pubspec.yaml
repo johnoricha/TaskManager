@@ -41,6 +41,8 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   mocktail:
   bloc_test: ^9.1.7
+  google_fonts:
+  animated_line_through: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.

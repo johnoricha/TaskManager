@@ -211,6 +211,7 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
             ),
           ],
         ),
+        const SizedBox(height: 12),
         buildListBody(state)
       ],
     );
@@ -253,7 +254,7 @@ class _TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                     _cubit.updateTask(task.copyWith(completed: checked));
                   },
                 ),
-                const Divider()
+                const SizedBox(height: 8),
               ],
             );
           }),

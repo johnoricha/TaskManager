@@ -1,3 +1,4 @@
+import 'package:animated_line_through/animated_line_through.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/tasks/cubit/tasks_state.dart';
 
@@ -21,6 +22,7 @@ class TaskItem extends StatefulWidget {
 
 class _TaskItemState extends State<TaskItem> {
   bool _isCompleted = false;
+  IconData _icon = Icons.keyboard_arrow_right;
 
   @override
   void initState() {
@@ -39,42 +41,76 @@ class _TaskItemState extends State<TaskItem> {
         background: Container(
           padding: const EdgeInsets.only(left: 20),
           alignment: Alignment.centerLeft,
-          color: Colors.red,
-          child: const Icon(Icons.delete, color: Colors.white),
+          child: const Icon(Icons.delete, color: Colors.red),
         ),
         secondaryBackground: Container(
           padding: const EdgeInsets.only(right: 20),
           alignment: Alignment.centerRight,
-          color: Colors.red,
-          child: const Icon(Icons.delete, color: Colors.white),
+          child: const Icon(Icons.delete, color: Colors.red),
         ),
         onDismissed: (direction) {
           widget.onDismiss();
         },
-        child: Material(
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      widget.task.name,
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
+              ListTile(
+                leading: InkWell(
+                    onTap: () {
+                      setState(() {
+                        if (_icon == Icons.keyboard_arrow_right) {
+                          _icon = Icons.keyboard_arrow_down;
+                        } else {
+                          _icon = Icons.keyboard_arrow_right;
+                        }
+                      });
+                    },
+                    child: Icon(_icon)),
+                title: AnimatedLineThrough(
+                  isCrossed: _isCompleted,
+                  duration: const Duration(milliseconds: 100),
+                  child: Text(
+                    widget.task.name,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
-                  Checkbox(
-                      value: _isCompleted,
-                      onChanged: (checked) {
-                        setState(() {
-                          _isCompleted = !_isCompleted;
-                        });
-                        widget.onChecked(widget.task, checked!);
-                      })
-                ],
+                ),
+                trailing: Checkbox(
+                    value: _isCompleted,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    onChanged: (checked) {
+                      setState(() {
+                        _isCompleted = !_isCompleted;
+                      });
+                      widget.onChecked(widget.task, checked!);
+                    }),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(left: 56, right: 50),
+                      height: _icon == Icons.keyboard_arrow_down ? 30 : 0,
+                      child: Text(
+                        widget.task.description,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
+                    ),
+                    _icon == Icons.keyboard_arrow_down
+                        ? const SizedBox(height: 16)
+                        : const SizedBox.shrink()
+                  ],
+                ),
               ),
             ],
           ),

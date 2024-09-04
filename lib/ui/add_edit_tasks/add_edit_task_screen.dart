@@ -16,7 +16,8 @@ class AddEditTaskScreen extends StatefulWidget {
 }
 
 class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
-  late TextEditingController _textEditingController;
+  late TextEditingController _taskNameTextEditingController;
+  late TextEditingController _taskDescriptionTextEditingController;
   final TasksCubit _cubit = getIt.get<TasksCubit>();
   bool _isBtnEnabled = false;
 
@@ -51,20 +52,35 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                    children: [
-                      TextFormField(
-                        decoration:
-                            const InputDecoration(hintText: 'Enter task name'),
-                        controller: _textEditingController,
-                        onChanged: (value) {
-                          setState(() {
-                            _isBtnEnabled =
-                                _textEditingController.text.isNotEmpty;
-                          });
-                        },
-                      ),
-                    ],
+                  TextFormField(
+                    decoration:
+                        const InputDecoration(hintText: 'Enter task name'),
+                    controller: _taskNameTextEditingController,
+                    onChanged: (value) {
+                      setState(() {
+                        _isBtnEnabled =
+                            _taskNameTextEditingController.text.isNotEmpty &&
+                                _taskDescriptionTextEditingController
+                                    .text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    maxLines: 2,
+                    decoration:
+                        const InputDecoration(hintText: 'Enter task description', ),
+                    controller: _taskDescriptionTextEditingController,
+                    onChanged: (value) {
+                      setState(() {
+                        _isBtnEnabled =
+                            _taskNameTextEditingController.text.isNotEmpty &&
+                                _taskDescriptionTextEditingController
+                                    .text.isNotEmpty;
+                      });
+                    },
                   ),
                   const SizedBox(
                     height: 20,
@@ -75,13 +91,13 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
                               widget.isEditMode
                                   ? _cubit.updateTask(Task(
                                       id: widget.task?.id,
-                                      name: _textEditingController.text,
-                                      description: '',
+                                      name: _taskNameTextEditingController.text,
+                                      description: _taskDescriptionTextEditingController.text,
                                       completed:
                                           widget.task?.completed ?? false))
                                   : _cubit.createTask(Task(
-                                      name: _textEditingController.text,
-                                      description: '',
+                                      name: _taskNameTextEditingController.text,
+                                      description: _taskDescriptionTextEditingController.text,
                                       completed: false));
                             }
                           : null,
@@ -96,15 +112,18 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
 
   @override
   void initState() {
-    _textEditingController =
+    _taskNameTextEditingController =
         TextEditingController(text: widget.task?.name ?? '');
+    _taskDescriptionTextEditingController =
+        TextEditingController(text: widget.task?.description ?? '');
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _textEditingController.dispose();
+    _taskNameTextEditingController.dispose();
+    _taskDescriptionTextEditingController.dispose();
     super.dispose();
   }
 }
