@@ -39,7 +39,7 @@ Don't have mockoon desktop installed? Download [here](https://mockoon.com/downlo
 2. flutter pub get
 3. dart run build_runner build --delete-conflicting-outputs
 ```
-### Step 2: Use this command according to Enviroment (Must be ran on your project root dir)
+### Step 2: Use this command according to Environment (Must be ran on your project root dir)
 ```yaml
 flutter run -t lib/main.dart
 ```
