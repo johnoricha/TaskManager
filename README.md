@@ -15,6 +15,21 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+## Setting Up Mockoon API
+Don't have mockoon desktop installed? Download [here](https://mockoon.com/download/)
+
+	1.	Launch Mockoon:
+	•	Open the Mockoon app on your desktop.
+	2.	Create a New Environment:
+	•	Click on + New environment at the top-left corner.
+	•	Give your environment a name, e.g., “CRUD API.”
+ 	•	In the routes tab, specify the path as "tasks"
+  	•	Go to the settings tab and specifiy the following values: 
+        	port: 3001, prefix: taskmanager/api
+	•	Set a port number for your environment to 3001.
+
+
+
 ## How to Run
 
 ### Recommended Flutter Version to Use: 3.22.3
@@ -38,16 +53,3 @@ flutter test
 2. REST API with Dio and Retrofit
 3. Sqflite for data persistence
 4. Json Serializable Model using Build Runner
-
-
-## Setting Up Mockoon API
-	1.	Launch Mockoon: (Don't have mockoon desktop installed? Dowload here: https://mockoon.com/download/)
-	•	Open the Mockoon app on your desktop.
-	2.	Create a New Environment:
-	•	Click on + New environment at the top-left corner.
-	•	Give your environment a name, e.g., “CRUD API.”
-    •   In the routes tab, specify the path as "tasks"
-    •   Go to the settings tab and specifiy the following values: 
-        port: 3001, prefix: taskmanager/api
-	•	Set a port number for your environment to 3001.
-
