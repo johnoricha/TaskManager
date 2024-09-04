@@ -129,7 +129,6 @@ class AppRepositoryImpl extends AppRepository {
                 }
               } else if (result is Failure && (result as Failure).code == 404) {
                 // task does not exist in remote DB, hence, create it
-                print('task not found');
                 final createResult = await tasksRemoteRepository.createTask(
                     pendingTask
                         .copyWith(syncStatus: SyncStatus.synced)
